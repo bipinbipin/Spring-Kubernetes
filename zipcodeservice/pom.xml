@@ -70,7 +70,7 @@
 				<version>1.3.6</version>
 				<configuration>
 					<tag>zipcode-service</tag>
-					<repository>konuratdocker/spark-examples</repository>
+					<repository>bipinbipin</repository>
 					<imageTags>
 						<imageTag>zipcode-service</imageTag>
 					</imageTags>
