@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ServiceController {
-	private static final String URLPrefix = "https://www.zipcodeapi.com/rest/REDACTED/";
+	private static final String URLPrefix = "http://api.zippopotam.us/us/";
 	private static final String GET = "GET";
 	
 	protected Logger logger = Logger.getLogger(ServiceController.class.getName());
@@ -27,14 +27,14 @@ public class ServiceController {
 
 	@RequestMapping(value = "/zipcodeservice/info/{zipcode}", produces = { "application/json" })
 	public String getZipcodeInfo(@PathVariable("zipcode") Integer zipcode) {
-		return getURLResponse("info.json/" + zipcode + "/degrees");
+		return getURLResponse(Integer.toString(zipcode));
 	}
 
-	@RequestMapping(value = "/zipcodeservice/nearby/{zipcode}/{distance}", produces = { "application/json" })
-	public String getNearbyZipcodes(@PathVariable("zipcode") Integer zipcode,
-			@PathVariable("distance") Integer distance) {
-		return getURLResponse("radius.json/" + zipcode + "/" + distance + "/mile");
-	}
+//	@RequestMapping(value = "/zipcodeservice/nearby/{zipcode}/{distance}", produces = { "application/json" })
+//	public String getNearbyZipcodes(@PathVariable("zipcode") Integer zipcode,
+//			@PathVariable("distance") Integer distance) {
+//		return getURLResponse("radius.json/" + zipcode + "/" + distance + "/mile");
+//	}
 
 	private String getURLResponse(String path) {
 		try {
