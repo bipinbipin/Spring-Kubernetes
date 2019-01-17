@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zip-web-deployment
+  namespace: default
+  labels:
+    app: zip-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zip-web
+  template:
+    metadata:
+      labels:
+        app: zip-web
+    spec:
+      containers:
+      - name: zip-web
+        image: bipinbipin/kubelab:web-service
+        command: ["java"]
+        args: ["-jar","/app.jar","zipcode-service.default.svc.cluster.local:8085","3334"]
+        ports:
+        - containerPort: 3334
+      nodeSelector:
+        servicetype: webservice
+      imagePullSecrets:
+      - name: regcred
+      dnsConfig:
+        nameservers:
+          - 10.96.0.10

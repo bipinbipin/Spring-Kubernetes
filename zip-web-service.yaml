@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zip-web-service
+  namespace: default
+spec:
+  ports:
+  - port: 3334
+    targetPort: 3334
+    nodePort: 30000
+    name: http
+    protocol: TCP
+  selector:
+    app: zip-web
+  type: NodePort
