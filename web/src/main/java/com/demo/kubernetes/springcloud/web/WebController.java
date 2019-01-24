@@ -5,8 +5,13 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.annotations.SerializedName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,17 +25,18 @@ public class WebController {
 
 	@Autowired
 	protected WebService service;
-	
+
 	protected Logger logger = Logger.getLogger(WebController.class
 			.getName());
 
 	@Autowired
 	public WebController(WebService service) {
-		logger.info("WebController initiated");;
+		logger.info("WebController initiated");
+		;
 		this.service = service;
 	}
-	
-	@RequestMapping(value = "/zip/getZipcodeInfo/{zipcode}", produces = { "text/html" })
+
+	@RequestMapping(value = "/zip/getZipcodeInfo/{zipcode}", produces = {"text/html"})
 	public String zipInfo(@PathVariable("zipcode") String zipcode) {
 		Gson gson = new Gson();
 		String response = service.getZipInfo(zipcode);
@@ -59,7 +65,7 @@ public class WebController {
 
 		StringBuilder result = new StringBuilder();
 		result.append("<html><body>");
-		if(info != null){
+		if (info != null) {
 			result.append(info.toString());
 		}
 		result.append("</body></html>");
@@ -84,59 +90,110 @@ public class WebController {
  */
 
 
-class ZipCode {
-	@JsonProperty("post code") String post_code;
-	@JsonProperty("country abbreviation") String country_abbr;
-	String country;
-	List<Place> places;
+	class ZipCode {
+		@JsonProperty("post code")
+		String post_code;
+		@JsonProperty("country abbreviation")
+		String country_abbr;
+		String country;
+		@JsonDeserialize(using = PlacesJsonDeserializer.class)
+		List<Place> places;
 
-	public ZipCode() {}
+		public ZipCode() {
+		}
 
-	public String getPost_code() {	return post_code; }
-	public void setPost_code(String post_code) { this.post_code = post_code; }
-	public String getCountry_abbr() { return country_abbr; }
-	public void setCountry_abbr(String country_abbr) { this.country_abbr = country_abbr; }
-	public String getCountry() { return country; }
-	public void setCountry(String country) { this.country = country; }
-	public List<Place> getPlaces() {		return places;	}
-	public void setPlaces(List<Place> places) {		this.places = places;	}
+		public String getPost_code() {
+			return post_code;
+		}
+
+		public void setPost_code(String post_code) {
+			this.post_code = post_code;
+		}
+
+		public String getCountry_abbr() {
+			return country_abbr;
+		}
+
+		public void setCountry_abbr(String country_abbr) {
+			this.country_abbr = country_abbr;
+		}
+
+		public String getCountry() {
+			return country;
+		}
+
+		public void setCountry(String country) {
+			this.country = country;
+		}
+
+		public List<Place> getPlaces() {
+			return places;
+		}
+
+		public void setPlaces(List<Place> places) {
+			this.places = places;
+		}
+
+
+
+
+		public String toString() {
+			StringBuilder strBldr = new StringBuilder();
+			strBldr.append("<p>Zipcode Information:<p>zip: " + post_code +
+					", Country: " + country + ", Country Abbr: " + country_abbr);
+
+			return strBldr.toString();
+		}
+	}
 
 	class Place {
-		@JsonProperty("place name") String place_name;
-		@JsonProperty("state abbreviation") String country_abbr;
+		@JsonProperty("place name")
+		String place_name;
+		@JsonProperty("state abbreviation")
+		String country_abbr;
 		String longitude;
 		String latitude;
 		String state;
 
-		public Place() {}
+		public Place() {
+		}
 
 		public String getPlace_name() {
 			return place_name;
 		}
+
 		public void setPlace_name(String place_name) {
 			this.place_name = place_name;
 		}
+
 		public String getCountry_abbr() {
 			return country_abbr;
 		}
+
 		public void setCountry_abbr(String country_abbr) {
 			this.country_abbr = country_abbr;
 		}
+
 		public String getLongitude() {
 			return longitude;
 		}
+
 		public void setLongitude(String longitude) {
 			this.longitude = longitude;
 		}
+
 		public String getLatitude() {
 			return latitude;
 		}
+
 		public void setLatitude(String latitude) {
 			this.latitude = latitude;
 		}
+
 		public String getState() {
 			return state;
 		}
+
 		public void setState(String state) {
 			this.state = state;
 		}
@@ -144,26 +201,31 @@ class ZipCode {
 		public String toString() {
 			StringBuilder strBldr = new StringBuilder();
 			strBldr.append("<p>Place:<p>zip: " + place_name +
-					", State: " + country_abbr );
+					", State: " + country_abbr);
 
 			return strBldr.toString();
 		}
 	}
 
 
-	public String toString() {
-		StringBuilder strBldr = new StringBuilder();
-		strBldr.append("<p>Zipcode Information:<p>zip: " + post_code +
-				", Country: " + country + ", Country Abbr: " + country_abbr);
 
-		return strBldr.toString();
+
+}
+
+
+class PlacesJsonDeserializer extends JsonDeserializer<List<WebController.Place>> {
+
+	@Override
+	public List<WebController.Place> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+		InnerItems innerItems = jp.readValueAs(InnerItems.class);
+
+		return innerItems.elements;
+	}
+
+	private static class InnerItems {
+		public List<WebController.Place> elements;
 	}
 }
 
 
-
-
-
-
-}
 
