@@ -41,6 +41,7 @@ public class WebController {
 		Gson gson = new Gson();
 		String response = service.getZipInfo(zipcode);
 		logger.info(response);
+		JsonNode root = null;
 		ZipCode info = gson.fromJson(response, ZipCode.class);
 
 		try {
@@ -48,15 +49,11 @@ public class WebController {
 			ObjectMapper mapper = new ObjectMapper();
 
 			// GET JSON OUT OF RESPONSE BODY
-			JsonNode root = mapper.readTree(response);
+			root = mapper.readTree(response);
 
-			// MAP JSON TO JAVA OBJECT
-			ZipCode zip = mapper.treeToValue(root, ZipCode.class);
 			logger.info("============");
-			logger.info(zip.toString());
+			logger.info(root.toString());
 			logger.info("============");
-
-			;
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -66,7 +63,7 @@ public class WebController {
 		StringBuilder result = new StringBuilder();
 		result.append("<html><body>");
 		if (info != null) {
-			result.append(info.toString());
+			result.append(root.toString());
 		}
 		result.append("</body></html>");
 		return result.toString();
