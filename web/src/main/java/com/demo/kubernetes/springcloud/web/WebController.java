@@ -63,6 +63,9 @@ public class WebController {
 		StringBuilder result = new StringBuilder();
 		result.append("<html><body>");
 		if (info != null) {
+			result.append("<h1>");
+			result.append(root.get("places").elements().next());
+			result.append("</h1");
 			result.append(root.toString());
 		}
 		result.append("</body></html>");
