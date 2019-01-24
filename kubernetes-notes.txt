@@ -1,0 +1,155 @@
+install docker
+
+	$ apt-get update
+	$ apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+	$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+	$ add-apt-repository "deb https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
+	$ apt-get update && apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 17.03 | head -1 | awk '{print $3}')
+
+install kubernetes
+
+	$ apt-get update && apt-get install -y apt-transport-https curl
+	$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+	$ cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+		deb http://apt.kubernetes.io/ kubernetes-xenial main
+		EOF
+	$ apt-get update
+	$ apt-get install -y kubelet kubeadm kubectl
+	$ sysctl net.bridge.bridge-nf-call-iptables=1
+	$ systemctl daemon-reload
+	$ systemctl restart kubelet
+
+configure cluster
+
+	on master:
+		$ sudo su -
+		$ kubeadm init --pod-network-cidr=10.244.0.0/16
+	<note the last line of output, you will need this for the worker nodes>
+			sudo kubeadm join 172.31.46.9:6443 --token 4ls009.fnkyxdf33q2b3vvq --discovery-token-ca-cert-hash sha256:c08aed2323f9e35df197ef06693ade3153241ec73517eb28764e1076f67bad49
+
+		$ mkdir -p $HOME/.kube
+		$ cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+		$ chown $(id -u):$(id -g) $HOME/.kube/config
+	<At this point you can check kubernetes staus>
+		$ systemctl status kubelet 
+
+	<The only remaining step in installing and configuring the master node is the installation of a pod network. we will use Flannel for this>
+		$ kubectl -n kube-system apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
+
+	<check the status of master node, should have 2 entries>
+		$ kubectl get services --all-namespaces -o wide
+
+
+	on workers:
+	<just run the kubeadm join ... command from the kubeadm init above>
+		$ kubeadm join 172.31.46.9:6443 --token 4ls009.fnkyxdf33q2b3vvq --discovery-token-ca-cert-hash sha256:c08aed2323f9e35df197ef06693ade3153241ec73517eb28764e1076f67bad49
+
+		$ docker login   <dockerhub creds>
+
+
+
+springboot docker build / push:
+
+	> edit pom.xml with registry name
+	$ mvn install dockerfile:build -DpushImageTag  
+	$ mvn dockerfile:push -Ddockerfile.useMavenSettingsForAuth=true
+
+
+service deployment:
+
+	$ sudo su -
+	$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=bipinbipin --docker-password=four20 --docker-email=bipinbipin@gmail.com
+	$ kubectl get secret regcred --output=yaml
+
+	$ kubectl label nodes ip-172-31-42-105 servicetype=webservice
+	$ kubectl label nodes ip-172-31-36-45 servicetype=webservice
+	$ kubectl label nodes ip-172-31-42-184 servicetype=zipcodeservice
+	$ kubectl label nodes ip-172-31-39-208 servicetype=zipcodeservice
+	...
+	$ kubectl get nodes --show-labels
+
+
+	<create deployment>
+		$ kubectl create -f ./zip-service-deployment.yaml
+		$ kubectl create -f ./zip-web-deployment.yaml
+
+	<verify running>
+		$ kubectl get pods -o wide
+
+	<create service>
+		$ kubectl create -f ./zipcode-service.yaml
+		$ kubectl create -f ./zip-web-service.yaml
+	<verify running>
+		$ kubectl get services -o wide
+	<service details>
+		$ kubectl describe services/zipcode-service
+
+
+	<check for "zipcode-servcie" and 10.x.x.x ip>
+		$ dig zipcode-service.default.svc.cluster.local @10.96.0.10
+
+
+	.. repeat for web-service .. CREATE DEPLOYMENT AND SERVICE FROM YAMLS
+	
+	<RESTART - delete service and deployment>
+		$ kubectl delete services zip-web-service
+		$ kubectl delete deployments zip-web-deployment
+
+
+nodes:
+
+	web-01 : ip-172-31-42-105.us-west-2.compute.internal
+	web-02 : ip-172-31-36-45.us-west-2.compute.internal
+	serv-01 : ip-172-31-42-184.us-west-2.compute.internal
+	serv-02 : ip-172-31-39-208.us-west-2.compute.internal
+
+
+
+
+http://ec2-34-221-80-120.us-west-2.compute.amazonaws.com:3335/zip/getZipcodeInfo/33323
+
+
+
+
+
+
+RHEL Based Install (yum)
+install docker
+
+ $ sudo yum update -y
+ $ sudo amazon-linux-extras install docker
+ $ sudo service docker start
+ $ sudo usermod -a -G docker ec2-user
+ $ docker info
+ $ sudo chkconfig docker on
+
+add registry
+
+ $ docker login
+ 	ecr -->	779674855313.dkr.ecr.us-east-2.amazonaws.com/aston-demo
+
+install kubernetes
+
+ $  cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=0
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+ $ sudo yum -y install -y kubelet kubeadm kubectl
+ $ sudo sysctl net.bridge.bridge-nf-call-iptables=1
+ $ sudo systemctl daemon-reload
+ $ sudo systemctl restart kubelet
+ $ sudo systemctl enable kubelet.service
+
+
+
+========================
+
+https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-interactive/
+
+ssh -i /directory/keyname.pem ubuntu@ec2-xx.compute-1.amazonaws.com
