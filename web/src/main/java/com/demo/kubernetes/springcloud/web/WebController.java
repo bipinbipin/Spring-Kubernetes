@@ -1,7 +1,11 @@
 package com.demo.kubernetes.springcloud.web;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.SerializedName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +35,25 @@ public class WebController {
 		String response = service.getZipInfo(zipcode);
 		logger.info(response);
 		ZipCode info = gson.fromJson(response, ZipCode.class);
+
+		try {
+			// JACKSON
+			ObjectMapper mapper = new ObjectMapper();
+
+			// GET JSON OUT OF RESPONSE BODY
+			JsonNode root = mapper.readTree(response);
+
+			// MAP JSON TO JAVA OBJECT
+			ZipCode zip = mapper.treeToValue(root, ZipCode.class);
+			logger.info("============");
+			logger.info(zip.toString());
+			logger.info("============");
+
+			;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		logger.info("============");
 		logger.info(info.places[0].place_name);
@@ -64,8 +87,8 @@ public class WebController {
 
 
 class ZipCode {
-	@SerializedName("post code") String post_code;
-	@SerializedName("country abbreviation") String country_abbr;
+	@JsonProperty("post code") String post_code;
+	@JsonProperty("country abbreviation") String country_abbr;
 	String country;
 	Place[] places;
 
@@ -88,8 +111,8 @@ class ZipCode {
 }
 
 class Place {
-	@SerializedName("place name") String place_name;
-	@SerializedName("state abbreviation") String country_abbr;
+	@JsonProperty("place name") String place_name;
+	@JsonProperty("state abbreviation") String country_abbr;
 	String longitude;
 	String latitude;
 	String state;
