@@ -1,6 +1,7 @@
 package com.demo.kubernetes.springcloud.web;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,9 +56,6 @@ public class WebController {
 			e.printStackTrace();
 		}
 
-		logger.info("============");
-		logger.info(info.places[0].place_name);
-		logger.info("============");
 
 		StringBuilder result = new StringBuilder();
 		result.append("<html><body>");
@@ -90,7 +88,9 @@ class ZipCode {
 	@JsonProperty("post code") String post_code;
 	@JsonProperty("country abbreviation") String country_abbr;
 	String country;
-	Place[] places;
+	List<Place> places;
+
+	public ZipCode() {}
 
 	public String getPost_code() {	return post_code; }
 	public void setPost_code(String post_code) { this.post_code = post_code; }
@@ -98,8 +98,8 @@ class ZipCode {
 	public void setCountry_abbr(String country_abbr) { this.country_abbr = country_abbr; }
 	public String getCountry() { return country; }
 	public void setCountry(String country) { this.country = country; }
-	public Place[] getPlaces() {return places; }
-	public void setPlaces(Place[] places) {	this.places = places; }
+	public List<Place> getPlaces() {		return places;	}
+	public void setPlaces(List<Place> places) {		this.places = places;	}
 
 	class Place {
 		@JsonProperty("place name") String place_name;
@@ -107,6 +107,8 @@ class ZipCode {
 		String longitude;
 		String latitude;
 		String state;
+
+		public Place() {}
 
 		public String getPlace_name() {
 			return place_name;
