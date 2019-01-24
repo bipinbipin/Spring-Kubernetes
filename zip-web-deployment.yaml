@@ -23,6 +23,7 @@ spec:
         args: ["-jar","/app.jar","zipcode-service.default.svc.cluster.local:8085","3334"]
         ports:
         - containerPort: 3334
+        imagePullPolicy: Always
       nodeSelector:
         servicetype: webservice
       imagePullSecrets:

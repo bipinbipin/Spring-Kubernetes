@@ -230,11 +230,11 @@ class ZipCodeInfo {
 				+ state);
 		strBldr.append(timezone);
 		strBldr.append("<p>Acceptable City Names:");
-		if((this.acceptable_city_names != null)) {
-			for(CityState cityState:acceptable_city_names){
-				strBldr.append("<p>" + cityState.getCity() + ", " + cityState.getState());
-			}
-		}
+//		if((this.acceptable_city_names != null)) {
+//			for(CityState cityState:acceptable_city_names){
+//				strBldr.append("<p>" + cityState.getCity() + ", " + cityState.getState());
+//			}
+//		}
 		return strBldr.toString();
 	}
 }
