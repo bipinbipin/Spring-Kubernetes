@@ -1,6 +1,8 @@
 package com.demo.kubernetes.springcloud.web;
 
 import java.util.logging.Logger;
+
+import com.google.gson.annotations.SerializedName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +31,9 @@ public class WebController {
 		String response = service.getZipInfo(zipcode);
 		logger.info(response);
 		ZipCodeInfo info = gson.fromJson(response,ZipCodeInfo.class);
-		
+
+		logger.info("============");
+		logger.info(info.zip_code);
 		StringBuilder result = new StringBuilder();
 		result.append("<html><body>");
 		if(info != null){
@@ -77,7 +81,7 @@ class ZipCodeWrapper{
 }
 
 class ZipCode {
-	String zip_code;
+    String zip_code;
 	String distance;
 	String city;
 	String state;
@@ -111,69 +115,60 @@ class ZipCode {
 	}
 }
 
+/*
+{
+	"post code": "33301",
+	"country": "United States",
+	"country abbreviation": "US",
+	"places": [
+				{
+				"place name": "Fort Lauderdale",
+				"longitude": "-80.1288",
+				"state": "Florida",
+				"state abbreviation": "FL",
+				"latitude": "26.1216"
+				}
+			]
+}
+ */
+
+
 
 class ZipCodeInfo {
-	String zip_code;
-	String lat;
-	String lng;
-	String city;
-	String state;
-	CityState[] acceptable_city_names;
-	Timezone timezone;
-	
-	public String getZip_code() {
-		return zip_code;
-	}
-
-	public void setZip_code(String zip_code) {
-		this.zip_code = zip_code;
-	}
-
-	public String getLat() {
-		return lat;
-	}
-
-	public void setLat(String lat) {
-		this.lat = lat;
-	}
-
-	public String getLng() {
-		return lng;
-	}
-
-	public void setLng(String lng) {
-		this.lng = lng;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	
-	
-	public Timezone getTimezone() {
-		return timezone;
-	}
-
-	public void setTimezone(Timezone timezone) {
-		this.timezone = timezone;
-	}
+    @SerializedName("post code") String zip_code;
+	String country;
+    @SerializedName("country abbreviation") String country_abbr;
+//	String city;
+//	String state;
+//	CityState[] places;
+//	Timezone timezone;
 
 
+    public String getZip_code() {
+        return zip_code;
+    }
 
-	class Timezone{
+    public void setZip_code(String zip_code) {
+        this.zip_code = zip_code;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCountry_abbr() {
+        return country_abbr;
+    }
+
+    public void setCountry_abbr(String country_abbr) {
+        this.country_abbr = country_abbr;
+    }
+
+    class Timezone{
 		String timezone_identifier;
 		String timezone_abbr;
 		public String getTimezone_identifier() {
@@ -215,21 +210,13 @@ class ZipCodeInfo {
 		}	
 	}
 
-	public CityState[] getAcceptable_city_names() {
-		return acceptable_city_names;
-	}
-
-	public void setAcceptable_city_names(CityState[] acceptable_city_names) {
-		this.acceptable_city_names = acceptable_city_names;
-	}
-
 	
 	public String toString() {
 		StringBuilder strBldr = new StringBuilder();
-		strBldr.append("<p>Zipcode Information:<p>zip: " + zip_code + ", latitude: " + lat + ", longitude: " + lng + ", city: " + city + ", state: "
-				+ state);
-		strBldr.append(timezone);
-		strBldr.append("<p>Acceptable City Names:");
+		strBldr.append("<p>Zipcode Information:<p>zip: " + zip_code +
+                ", Country: " + country + ", Country Abbr: " + country_abbr);
+//		strBldr.append(timezone);
+//		strBldr.append("<p>Acceptable City Names:");
 //		if((this.acceptable_city_names != null)) {
 //			for(CityState cityState:acceptable_city_names){
 //				strBldr.append("<p>" + cityState.getCity() + ", " + cityState.getState());
