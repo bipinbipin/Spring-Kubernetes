@@ -58,7 +58,7 @@ springboot docker build / push:
 service deployment:
 
 	$ sudo su -
-	$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=bipinbipin --docker-password=four20 --docker-email=bipinbipin@gmail.com
+	$ kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username= --docker-password= --docker-email=bipinbipin@gmail.com
 	$ kubectl get secret regcred --output=yaml
 
 	$ kubectl label nodes ip-172-31-42-105 servicetype=webservice
