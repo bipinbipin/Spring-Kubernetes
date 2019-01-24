@@ -64,7 +64,7 @@ public class WebController {
 		result.append("<html><body>");
 		if (info != null) {
 			result.append("<h1>");
-			result.append(root.get("places").elements().next().get("place_name"));
+			result.append(root.get("places").elements().next().get("place name"));
 			result.append("</h1");
 			result.append(root.toString());
 		}
