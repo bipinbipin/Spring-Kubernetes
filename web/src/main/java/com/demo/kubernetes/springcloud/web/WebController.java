@@ -12,12 +12,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.gson.annotations.SerializedName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.google.gson.Gson;
+
 
 
 @RestController
@@ -38,11 +37,10 @@ public class WebController {
 
 	@RequestMapping(value = "/zip/getZipcodeInfo/{zipcode}", produces = {"text/html"})
 	public String zipInfo(@PathVariable("zipcode") String zipcode) {
-		Gson gson = new Gson();
+
 		String response = service.getZipInfo(zipcode);
-		logger.info(response);
+//		logger.info(response);
 		JsonNode root = null;
-		ZipCode info = gson.fromJson(response, ZipCode.class);
 
 		try {
 			// JACKSON
@@ -62,7 +60,7 @@ public class WebController {
 
 		StringBuilder result = new StringBuilder();
 		result.append("<html><body>");
-		if (info != null) {
+		if (root != null) {
 			result.append("<h1>");
 			result.append(root.get("places").elements().next().get("place name"));
 			result.append("</h1");
