@@ -101,6 +101,54 @@ class ZipCode {
 	public Place[] getPlaces() {return places; }
 	public void setPlaces(Place[] places) {	this.places = places; }
 
+	class Place {
+		@JsonProperty("place name") String place_name;
+		@JsonProperty("state abbreviation") String country_abbr;
+		String longitude;
+		String latitude;
+		String state;
+
+		public String getPlace_name() {
+			return place_name;
+		}
+		public void setPlace_name(String place_name) {
+			this.place_name = place_name;
+		}
+		public String getCountry_abbr() {
+			return country_abbr;
+		}
+		public void setCountry_abbr(String country_abbr) {
+			this.country_abbr = country_abbr;
+		}
+		public String getLongitude() {
+			return longitude;
+		}
+		public void setLongitude(String longitude) {
+			this.longitude = longitude;
+		}
+		public String getLatitude() {
+			return latitude;
+		}
+		public void setLatitude(String latitude) {
+			this.latitude = latitude;
+		}
+		public String getState() {
+			return state;
+		}
+		public void setState(String state) {
+			this.state = state;
+		}
+
+		public String toString() {
+			StringBuilder strBldr = new StringBuilder();
+			strBldr.append("<p>Place:<p>zip: " + place_name +
+					", State: " + country_abbr );
+
+			return strBldr.toString();
+		}
+	}
+
+
 	public String toString() {
 		StringBuilder strBldr = new StringBuilder();
 		strBldr.append("<p>Zipcode Information:<p>zip: " + post_code +
@@ -110,52 +158,6 @@ class ZipCode {
 	}
 }
 
-class Place {
-	@JsonProperty("place name") String place_name;
-	@JsonProperty("state abbreviation") String country_abbr;
-	String longitude;
-	String latitude;
-	String state;
-
-	public String getPlace_name() {
-		return place_name;
-	}
-	public void setPlace_name(String place_name) {
-		this.place_name = place_name;
-	}
-	public String getCountry_abbr() {
-		return country_abbr;
-	}
-	public void setCountry_abbr(String country_abbr) {
-		this.country_abbr = country_abbr;
-	}
-	public String getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
-	public String getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String toString() {
-		StringBuilder strBldr = new StringBuilder();
-		strBldr.append("<p>Place:<p>zip: " + place_name +
-				", State: " + country_abbr );
-
-		return strBldr.toString();
-	}
-}
 
 
 
